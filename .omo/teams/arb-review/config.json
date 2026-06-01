@@ -1,0 +1,67 @@
+{
+  "name": "arb-review",
+  "description": "Architecture Review Board. Reviews evidence, WAF assessment, votes. APPROVED / CONDITIONAL / REJECTED.",
+  "lead": { "kind": "subagent_type", "subagent_type": "atlas" },
+  "validation": {
+    "on_entry": { "check_required_dirs": [".sisyphus/knowledge/arb"], "skip_if_missing": true }
+  },
+  "members": [
+    {
+      "kind": "category", "name": "janus-chair", "category": "quick",
+      "fallback_categories": ["writing"],
+      "always_load": ["governance-gate", "azure-well-architected-assessment", "pressure-test", "risk-register"],
+      "conditional_load": [
+        { "if_adr_contains": ["threat", "security"], "load": ["threat-modelling"] },
+        { "if_adr_contains": ["secure by design"], "load": ["secure-by-design"] }
+      ],
+      "load_instructions": [
+        ".github/instructions/global.instructions.md"
+      ],
+      "trivial_project_skip": false,
+      "prompt": "You are Janus, ARB chair.\n\nTASKS:\n1. Evidence inventory using governance-gate checklist\n2. WAF assessment -> arb/{phase}-gate/waf-assessment.md\n3. Gate checklist -> arb/{phase}-gate/checklist.md\n4. Collect votes from product-owner, security, cloud-economics\n5. Tally: APPROVED (3/3), CONDITIONAL (2/3), REJECTED (0-1/3)\n6. Outcome -> arb/{phase}-gate/outcome.md"
+    },
+    {
+      "kind": "category", "name": "product-owner", "category": "writing",
+      "fallback_categories": ["quick"],
+      "always_load": ["pressure-test"],
+      "conditional_load": [
+        { "if_adr_contains": ["prd", "requirements"], "load": ["create-prd"] }
+      ],
+      "load_instructions": [],
+      "trivial_project_skip": false,
+      "prompt": "Product Owner ARB voter.\n\nRead: business-intent/, adrs/registry.md, evidence/{phase}/\n\nVote on alignment with business intent, success metrics, budget, scope.\n\nWrite to arb/{phase}-gate/votes/product-owner-vote.md"
+    },
+    {
+      "kind": "category", "name": "security", "category": "quick",
+      "fallback_categories": ["writing"],
+      "always_load": ["threat-modelling"],
+      "conditional_load": [
+        { "if_adr_contains": ["agent", "ai"], "load": ["owasp-agentic", "responsible-ai-operating-model", "agent-governance-toolkit"] },
+        { "if_adr_contains": ["defender"], "load": ["microsoft-defender"] },
+        { "if_adr_contains": ["sentinel"], "load": ["azure-sentinel"] },
+        { "if_adr_contains": ["api security", "owasp"], "load": ["api-security-review"] },
+        { "if_adr_contains": ["compliance", "audit"], "load": ["ca-from-iac"] }
+      ],
+      "load_instructions": [
+        ".github/instructions/global.instructions.md",
+        ".github/instructions/agentic-security.instructions.md"
+      ],
+      "trivial_project_skip": false,
+      "prompt": "Security ARB voter.\n\nRead: security/threat-model.md, risks/registry.md\n\nVote on: threats mitigated/accepted, OWASP addressed, compliance met.\n\nWrite to arb/{phase}-gate/votes/security-vote.md"
+    },
+    {
+      "kind": "category", "name": "cloud-economics", "category": "quick",
+      "fallback_categories": ["writing"],
+      "always_load": ["cost-optimization", "agent-economics", "azure-cost-calculator"],
+      "conditional_load": [
+        { "if_adr_contains": ["finops", "reservation"], "load": ["finops"] },
+        { "if_adr_contains": ["waf"], "load": ["azure-well-architected-assessment"] }
+      ],
+      "load_instructions": [
+        ".github/instructions/global.instructions.md"
+      ],
+      "trivial_project_skip": false,
+      "prompt": "Cloud Economics ARB voter.\n\nRead: cost-estimates/architecture-azure.md, constraints/budget.md\n\nVote on: cost within budget, agent economics within baseline, variance acceptable.\n\nWrite to arb/{phase}-gate/votes/cloud-economics-vote.md"
+    }
+  ]
+}

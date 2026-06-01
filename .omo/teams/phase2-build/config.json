@@ -1,0 +1,169 @@
+{
+  "name": "phase2-build",
+  "description": "Phase 2 Build. Wave 1: backend + mcp-server (contracts only). Wave 2: all members.",
+  "lead": { "kind": "subagent_type", "subagent_type": "atlas" },
+  "trivial_project_skip_members": ["frontend", "mcp-server", "ai-engineer", "data-engineer"],
+  "validation": {
+    "on_entry": {
+      "check_required_dirs": [".sisyphus/knowledge/adrs"],
+      "check_required_files": [".sisyphus/knowledge/api-contracts/openapi.yaml"],
+      "skip_if_missing": true
+    },
+    "on_exit": {
+      "check_artifacts": [
+        "demo-hello-world/src/**/*.cs", "demo-hello-world/tests/**/*.cs",
+        "demo-hello-world/infra/*.bicep"
+      ],
+      "min_count": 3, "fail_missing": false
+    }
+  },
+  "members": [
+    {
+      "kind": "category", "name": "frontend", "category": "visual-engineering",
+      "fallback_categories": ["quick"],
+      "always_load": [
+        "typescript-react-patterns", "ui-design-brain",
+        "spa-endpoint-configuration", "error-state-ux", "code-review"
+      ],
+      "conditional_load": [
+        { "if_adr_contains": ["fluent ui", "portal"], "load": ["azure-portal-branding", "fluentui-icons"] },
+        { "if_adr_contains": ["playwright", "e2e"], "load": ["playwright-testing"] },
+        { "if_adr_contains": ["msal", "entra", "auth"], "load": ["identity-managed-identity"] },
+        { "if_adr_contains": ["telemetry", "application insights"], "load": ["observability-monitoring"] },
+        { "if_adr_contains": ["copilot", "chat", "ai assistant"], "load": ["copilotkit-agui"] },
+        { "if_adr_contains": ["demo", "gif"], "load": ["create-gif"] }
+      ],
+      "load_instructions": [
+        ".github/instructions/global.instructions.md",
+        ".github/instructions/coding-standards/typescript/typescript.instructions.md",
+        ".github/instructions/coding-standards/typescript/typescript-tests.instructions.md"
+      ],
+      "trivial_project_skip": true,
+      "trivial_project_rationale": "No frontend API-only demo",
+      "prompt": "PREREQUISITE: api-contracts/openapi.yaml exists. Otherwise write frontend-waiting.md and STOP.\n\nFrontend builder. Phase 2 (Wave 2). Build React 19 + Fluent UI v9. Follow loaded TypeScript instruction files."
+    },
+    {
+      "kind": "category", "name": "backend", "category": "deep",
+      "fallback_categories": ["quick", "writing"],
+      "always_load": ["dotnet-backend-patterns", "observability-monitoring", "code-review"],
+      "conditional_load": [
+        { "if_adr_contains": ["cosmos", "documentdb"], "load": ["cosmos-db-nosql-patterns"] },
+        { "if_adr_contains": ["service bus", "event"], "load": ["event-driven-messaging", "async-request-reply"] },
+        { "if_adr_contains": ["aspire", "orchestrator"], "load": ["dotnet-aspire"] },
+        { "if_adr_contains": ["typespec", "openapi"], "load": ["typespec-api-design"] },
+        { "if_adr_contains": ["managed identity", "rbac"], "load": ["identity-managed-identity", "azure-role-selector"] },
+        { "if_adr_contains": ["evaluate", "agenteval"], "load": ["agenteval"] },
+        { "if_adr_contains": ["versioning"], "load": ["api-versioning-governance"] },
+        { "if_adr_contains": ["postgres"], "load": ["postgresql-npgsql"] },
+        { "if_adr_contains": ["lro", "long-running"], "load": ["async-request-reply"] },
+        { "if_adr_contains": ["function", "serverless"], "load": ["azure-functions-patterns"] },
+        { "if_adr_contains": ["jwt", "oauth"], "load": ["api-security-review"] }
+      ],
+      "load_instructions": [
+        ".github/instructions/global.instructions.md",
+        ".github/instructions/coding-standards/csharp/aspnetcore-api.instructions.md",
+        ".github/instructions/coding-standards/csharp/csharp.instructions.md",
+        ".github/instructions/coding-standards/csharp/csharp-tests.instructions.md",
+        ".github/instructions/self-explanatory-code-commenting.instructions.md",
+        ".github/instructions/distribution-security.instructions.md"
+      ],
+      "trivial_project_skip": false,
+      "prompt": "WAVE 1 (CONTRACTS):\n1. OpenAPI spec -> api-contracts/openapi.yaml\n2. contract-summary.md\n3. backend-contracts-ready.md\n4. STOP notify lead\n\nWAVE 2 (FULL IMPLEMENTATION):\nBuild .NET API from ADRs. Problem Details, explicit binding, no !, managed identity, OpenTelemetry. Self-review.\n\nFollow loaded instruction files for ASP.NET Core API standards, C# patterns, and test practices."
+    },
+    {
+      "kind": "category", "name": "infra", "category": "quick",
+      "fallback_categories": ["writing"],
+      "always_load": [
+        "azd-deployment", "azure-container-apps", "azure-defaults",
+        "code-review", "azure-deployment-preflight"
+      ],
+      "conditional_load": [
+        { "if_adr_contains": ["networking", "vnet", "private endpoint"], "load": ["private-networking", "azure-network-security-perimeter"] },
+        { "if_adr_contains": ["key vault", "secret"], "load": ["secret-management"] },
+        { "if_adr_contains": ["managed identity"], "load": ["identity-managed-identity"] },
+        { "if_adr_contains": ["rbac"], "load": ["azure-role-selector"] },
+        { "if_adr_contains": ["avm", "module"], "load": ["azure-verified-modules"] },
+        { "if_adr_contains": ["acr", "registry"], "load": ["acr-artifact-lifecycle"] }
+      ],
+      "load_instructions": [
+        ".github/instructions/global.instructions.md",
+        ".github/instructions/azure-iac.instructions.md",
+        ".github/instructions/coding-standards/bicep/bicep.instructions.md",
+        ".github/instructions/data-sovereignty.instructions.md",
+        ".github/instructions/deployment-safety.instructions.md"
+      ],
+      "trivial_project_skip": false,
+      "prompt": "Infra builder. Phase 2 Build. IaC from ADRs. azd + Bicep, managed identity, health probes, auto-scaling. Self-review.\n\nFollow loaded instruction files for Bicep, IaC, and deployment safety standards."
+    },
+    {
+      "kind": "category", "name": "data-engineer", "category": "quick",
+      "fallback_categories": ["writing"],
+      "always_load": ["code-review"],
+      "conditional_load": [
+        { "if_adr_contains": ["cosmos", "documentdb"], "load": ["cosmos-db-nosql-patterns", "cosmos-nosql-query-generation"] },
+        { "if_adr_contains": ["postgres", "postgresql"], "load": ["azure-postgresql", "postgresql-npgsql"] },
+        { "if_adr_contains": ["fabric", "lakehouse"], "load": ["microsoft-fabric", "fabric-schema-lifecycle"] },
+        { "if_adr_contains": ["purview"], "load": ["microsoft-purview"] },
+        { "if_adr_contains": ["drasi", "change detection"], "load": ["drasi"] },
+        { "if_adr_contains": ["pii", "de-identify"], "load": ["privacy-safe-data-deidentification"] },
+        { "if_adr_contains": ["sql"], "load": ["sql-query-generation"] },
+        { "if_adr_contains": ["test data", "seed", "sample"], "load": ["dummy-dataset"] }
+      ],
+      "load_instructions": [
+        ".github/instructions/global.instructions.md",
+        ".github/instructions/data-sovereignty.instructions.md"
+      ],
+      "trivial_project_skip": true,
+      "trivial_project_rationale": "No data layer stateless demo",
+      "prompt": "Data engineer. Phase 2 (Wave 2). Build data layer from data-arch ADRs. If ADR impractical ASK lead."
+    },
+    {
+      "kind": "category", "name": "ai-engineer", "category": "quick",
+      "fallback_categories": ["writing"],
+      "always_load": ["code-review"],
+      "conditional_load": [
+        { "if_adr_contains": ["maf", "microsoft agent"], "load": ["microsoft-agent-framework"] },
+        { "if_adr_contains": ["foundry", "ai studio"], "load": ["microsoft-foundry"] },
+        { "if_adr_contains": ["autonomous", "background", "loop"], "load": ["autonomous-agent-loops"] },
+        { "if_adr_contains": ["approval", "human", "hitl"], "load": ["hitl-design-patterns"] },
+        { "if_adr_contains": ["latency", "performance"], "load": ["agent-performance-optimization"] },
+        { "if_adr_contains": ["governance", "policy gate"], "load": ["agent-governance-toolkit"] },
+        { "if_adr_contains": ["parallel", "dispatch"], "load": ["dispatching-parallel-agents"] },
+        { "if_adr_contains": ["telemetry", "trace", "monitor"], "load": ["observability-monitoring"] },
+        { "if_adr_contains": ["skill", "api"], "load": ["app-as-skill"] },
+        { "if_adr_contains": ["evaluate", "agenteval"], "load": ["agenteval"] },
+        { "if_adr_contains": ["owasp", "agentic"], "load": ["owasp-agentic"] },
+        { "if_adr_contains": ["rai", "responsible"], "load": ["responsible-ai-operating-model"] }
+      ],
+      "load_instructions": [
+        ".github/instructions/global.instructions.md",
+        ".github/instructions/agentic-security.instructions.md",
+        ".github/instructions/llm-structured-output.instructions.md"
+      ],
+      "trivial_project_skip": true,
+      "trivial_project_rationale": "No AI agents stateless demo",
+      "prompt": "PREREQUISITE: tool-contracts/tools.json exists. Otherwise write ai-engineer-waiting.md and STOP.\n\nAI engineer. Phase 2 (Wave 2). Implement agent from agent-arch ADRs. Follow loaded agentic-security instructions."
+    },
+    {
+      "kind": "category", "name": "mcp-server", "category": "quick",
+      "fallback_categories": ["writing"],
+      "always_load": ["code-review"],
+      "conditional_load": [
+        { "if_adr_contains": ["mcp", "tool"], "load": ["mcp-server-design"] },
+        { "if_adr_contains": ["security", "threat"], "load": ["api-security-review", "threat-modelling"] },
+        { "if_adr_contains": ["secret", "key vault"], "load": ["secret-management"] },
+        { "if_adr_contains": ["identity", "auth"], "load": ["identity-managed-identity"] },
+        { "if_adr_contains": ["rbac", "role"], "load": ["azure-role-selector"] },
+        { "if_adr_contains": ["telemetry", "log", "monitor"], "load": ["observability-monitoring"] },
+        { "if_adr_contains": ["evaluate", "test"], "load": ["agenteval"] }
+      ],
+      "load_instructions": [
+        ".github/instructions/global.instructions.md",
+        ".github/instructions/agentic-security.instructions.md"
+      ],
+      "trivial_project_skip": true,
+      "trivial_project_rationale": "No MCP servers stateless demo",
+      "prompt": "WAVE 1 (CONTRACTS):\n1. Tool schemas -> tool-contracts/tools.json\n2. contract-summary.md\n3. mcp-contracts-ready.md\n4. STOP\n\nWAVE 2 (IMPLEMENTATION): Build MCP server from tool definitions."
+    }
+  ]
+}

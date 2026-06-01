@@ -1,0 +1,34 @@
+# Phase 3 → 4 Gate: Validate to Production Readiness
+# Voters focus on E2E tests, security hardening, risk closure, and operations readiness.
+# Proposal is the validation phase completion sign-off.
+arb:
+  proposal: "Phase 3 → 4 Gate: [Project name] validation complete"
+
+  required_voters:
+    - name: security-lead
+      role: "Security Lead"
+    - name: product-owner
+      role: "Product Owner"
+    - name: cloud-economics
+      role: "Cloud Economics"
+
+  optional_voters:
+    - name: platform-lead
+      role: "Platform Lead"
+    - name: ai-ethics
+      role: "AI Ethics / RAI"
+    - name: delivery-lead
+      role: "Delivery Lead"
+
+  quorum:
+    min_required_voters: 2
+    min_total_votes: 3
+    approval_threshold: 0.67
+    count_abstain: false
+    allow_partial: false
+
+  deadlock:
+    escalate_to: "CTO"
+    escalation_contact: "cto@example.com"
+    escalation_days: 3
+    escalation_backup: "VP Engineering"

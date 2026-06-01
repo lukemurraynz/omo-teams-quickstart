@@ -1,0 +1,29 @@
+arb:
+  proposal: "Phase 1 → 2 Gate: LinkSnap architecture sign-off"
+
+  required_voters:
+    - name: principal-architect
+      role: "Principal Architect"
+    - name: security-lead
+      role: "Security Lead"
+    - name: product-owner
+      role: "Product Owner"
+
+  optional_voters:
+    - name: cloud-economics
+      role: "Cloud Economics"
+    - name: delivery-lead
+      role: "Delivery Lead"
+
+  quorum:
+    min_required_voters: 2
+    min_total_votes: 3
+    approval_threshold: 0.67
+    count_abstain: false
+    allow_partial: false
+
+  deadlock:
+    escalate_to: "CTO"
+    escalation_contact: "cto@example.com"
+    escalation_days: 5
+    escalation_backup: "VP Engineering"

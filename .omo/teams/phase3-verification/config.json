@@ -1,0 +1,72 @@
+{
+  "name": "phase3-verification",
+  "description": "Phase 3 Verification. Integration review, tests, security hardening. Gate before Phase 4.",
+  "lead": { "kind": "subagent_type", "subagent_type": "atlas" },
+  "trivial_project_skip_members": [],
+  "validation": {
+    "on_entry": { "check_required_dirs": [".sisyphus/evidence/phase2"], "skip_if_missing": true },
+    "on_exit": {
+      "check_artifacts": [
+        ".sisyphus/evidence/phase3/integration/test-results.md",
+        ".sisyphus/evidence/phase3/qa/test-results.md",
+        ".sisyphus/evidence/phase3/security/hardening-evidence.md"
+      ],
+      "min_count": 3, "fail_missing": true
+    }
+  },
+  "members": [
+    {
+      "kind": "category", "name": "integration", "category": "quick",
+      "fallback_categories": ["writing"],
+      "always_load": ["code-review", "azure-well-architected-assessment"],
+      "conditional_load": [
+        { "if_adr_contains": ["cosmos"], "load": ["cosmos-db-nosql-patterns"] },
+        { "if_adr_contains": ["quality", "thermo"], "load": ["thermo-nuclear-code-quality-review"] },
+        { "if_adr_contains": ["telemetry", "observability"], "load": ["observability-monitoring"] },
+        { "if_adr_contains": ["api security", "owasp"], "load": ["api-security-review"] }
+      ],
+      "load_instructions": [
+        ".github/instructions/global.instructions.md"
+      ],
+      "trivial_project_skip": false,
+      "prompt": "Integration specialist. Phase 3 Verification. Verify integration points match ADRs. Code quality, WAF assessment.\n\nWrite to evidence/phase3/integration/test-results.md"
+    },
+    {
+      "kind": "category", "name": "qa", "category": "quick",
+      "fallback_categories": ["writing"],
+      "always_load": [],
+      "conditional_load": [
+        { "if_adr_contains": ["playwright", "e2e"], "load": ["playwright-testing"] },
+        { "if_adr_contains": ["performance", "load"], "load": ["azure-performance-resilience-validation"] },
+        { "if_adr_contains": ["deployment", "pipeline"], "load": ["github-actions-ci-cd"] },
+        { "if_adr_contains": ["chaos", "fault"], "load": ["chaos-engineering"] },
+        { "if_adr_contains": ["canary", "blue/green", "ring"], "load": ["azure-safe-deployment-practices"] }
+      ],
+      "load_instructions": [
+        ".github/instructions/global.instructions.md"
+      ],
+      "trivial_project_skip": false,
+      "prompt": "QA specialist. Phase 3 Verification. Verify all tests pass. Document results.\n\nWrite to evidence/phase3/qa/test-results.md"
+    },
+    {
+      "kind": "category", "name": "security-engineering", "category": "quick",
+      "fallback_categories": ["writing"],
+      "always_load": ["threat-modelling", "api-security-review"],
+      "conditional_load": [
+        { "if_adr_contains": ["agent", "ai"], "load": ["owasp-agentic"] },
+        { "if_adr_contains": ["supply chain", "container"], "load": ["container-supply-chain"] },
+        { "if_adr_contains": ["defender"], "load": ["microsoft-defender"] },
+        { "if_adr_contains": ["sentinel"], "load": ["azure-sentinel"] },
+        { "if_adr_contains": ["governance"], "load": ["agent-governance-toolkit"] },
+        { "if_adr_contains": ["red team", "adversarial"], "load": ["agenteval"] },
+        { "if_adr_contains": ["secret"], "load": ["secret-management"] }
+      ],
+      "load_instructions": [
+        ".github/instructions/global.instructions.md",
+        ".github/instructions/agentic-security.instructions.md"
+      ],
+      "trivial_project_skip": false,
+      "prompt": "Security engineer. Phase 3 Verification. Read threat-model.md. Implement ALL mitigations. Secrets check. OWASP Top 10 addressed.\n\nWrite to evidence/phase3/security/hardening-evidence.md"
+    }
+  ]
+}

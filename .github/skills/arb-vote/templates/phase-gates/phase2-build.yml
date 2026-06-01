@@ -1,0 +1,32 @@
+# Phase 2 → 3 Gate: Build to Validate
+# Voters focus on code completeness, evidence presence, and test readiness.
+# Proposal is the build phase completion sign-off.
+arb:
+  proposal: "Phase 2 → 3 Gate: [Project name] build complete"
+
+  required_voters:
+    - name: principal-architect
+      role: "Principal Architect"
+    - name: product-owner
+      role: "Product Owner"
+
+  optional_voters:
+    - name: security-lead
+      role: "Security Lead"
+    - name: platform-lead
+      role: "Platform Lead"
+    - name: delivery-lead
+      role: "Delivery Lead"
+
+  quorum:
+    min_required_voters: 2
+    min_total_votes: 2
+    approval_threshold: 0.51
+    count_abstain: false
+    allow_partial: false
+
+  deadlock:
+    escalate_to: "VP Engineering"
+    escalation_contact: "vpe@example.com"
+    escalation_days: 3
+    escalation_backup: "CTO"

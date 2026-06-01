@@ -1,0 +1,36 @@
+# Phase 1 → 2 Gate: Architecture to Build
+# Voters focus on ADR completeness, threat model, data model, security posture.
+# Proposal is the architecture design sign-off.
+arb:
+  proposal: "Phase 1 → 2 Gate: [Project name] architecture"
+
+  required_voters:
+    - name: principal-architect
+      role: "Principal Architect"
+    - name: security-lead
+      role: "Security Lead"
+    - name: product-owner
+      role: "Product Owner"
+
+  optional_voters:
+    - name: cloud-economics
+      role: "Cloud Economics"
+    - name: platform-lead
+      role: "Platform Lead"
+    - name: ai-ethics
+      role: "AI Ethics / RAI"
+    - name: delivery-lead
+      role: "Delivery Lead"
+
+  quorum:
+    min_required_voters: 2
+    min_total_votes: 3
+    approval_threshold: 0.67
+    count_abstain: false
+    allow_partial: false
+
+  deadlock:
+    escalate_to: "CTO"
+    escalation_contact: "cto@example.com"
+    escalation_days: 5
+    escalation_backup: "VP Engineering"

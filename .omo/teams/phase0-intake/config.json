@@ -1,0 +1,42 @@
+{
+  "name": "phase0-intake",
+  "description": "Phase 0 Intake. Business intent, constraints, metrics, budget, risks, stakeholders.",
+  "lead": { "kind": "subagent_type", "subagent_type": "atlas" },
+  "validation": {
+    "on_entry": { "check_required_dirs": [], "skip_if_missing": false },
+    "on_exit": {
+      "check_artifacts": [
+        ".sisyphus/knowledge/business-intent/problem-statement.md",
+        ".sisyphus/knowledge/business-intent/success-metrics.md",
+        ".sisyphus/knowledge/constraints/budget.md",
+        ".sisyphus/knowledge/constraints/compliance-scope.md",
+        ".sisyphus/knowledge/risks/registry.md",
+        ".sisyphus/knowledge/stakeholders/map.md"
+      ],
+      "min_count": 6, "fail_missing": true
+    }
+  },
+  "members": [
+    {
+      "kind": "category", "name": "product-owner", "category": "writing",
+      "fallback_categories": ["quick"],
+      "always_load": [
+        "create-prd", "business-case-investment-justification", "stakeholder-map",
+        "risk-register", "agent-economics", "identify-assumptions",
+        "user-stories", "pre-mortem", "prioritize-features", "value-proposition",
+        "naming-strategist"
+      ],
+      "conditional_load": [
+        { "if_adr_contains": ["hipaa", "soc2", "pci", "iso27001"], "load": ["responsible-ai-operating-model"] },
+        { "if_adr_contains": ["ai agent", "llm", "copilot"], "load": ["user-personas", "customer-journey-map"] }
+      ],
+      "load_instructions": [
+        ".github/instructions/global.instructions.md",
+        ".github/instructions/writing-style.instructions.md",
+        ".github/instructions/coding-standards/markdown/markdown.instructions.md"
+      ],
+      "trivial_project_skip": false,
+      "prompt": "You are a product owner capturing requirements for a new project. Phase 0: Intake.\n\nOUTPUTS:\n1. business-intent/problem-statement.md\n2. business-intent/success-metrics.md (3-5 metrics with targets)\n3. constraints/budget.md (Azure + agent economics: P1=200k, P2=400k, P3=200k, P4=200k tokens)\n4. constraints/compliance-scope.md\n5. risks/registry.md (Likelihood x Impact)\n6. stakeholders/map.md\n7. business-intent/business-case.md\n\nUse the loaded instruction files for writing style and markdown format."
+    }
+  ]
+}

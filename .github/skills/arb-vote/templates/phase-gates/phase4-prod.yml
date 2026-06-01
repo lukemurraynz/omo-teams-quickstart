@@ -1,0 +1,34 @@
+# Phase 4 → Production Gate: Production Release
+# Voters focus on DR test evidence, runbooks, SLOs, dashboards, and operational readiness.
+# Proposal is the production release approval.
+arb:
+  proposal: "Phase 4 → Prod Gate: [Project name] production release"
+
+  required_voters:
+    - name: product-owner
+      role: "Product Owner"
+    - name: security-lead
+      role: "Security Lead"
+    - name: cloud-economics
+      role: "Cloud Economics"
+
+  optional_voters:
+    - name: principal-architect
+      role: "Principal Architect"
+    - name: platform-lead
+      role: "Platform Lead"
+    - name: delivery-lead
+      role: "Delivery Lead"
+
+  quorum:
+    min_required_voters: 2
+    min_total_votes: 3
+    approval_threshold: 0.67
+    count_abstain: false
+    allow_partial: false
+
+  deadlock:
+    escalate_to: "CTO"
+    escalation_contact: "cto@example.com"
+    escalation_days: 2
+    escalation_backup: "VP Engineering"

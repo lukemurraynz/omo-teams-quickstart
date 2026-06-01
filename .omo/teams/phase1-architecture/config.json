@@ -1,0 +1,150 @@
+{
+  "name": "phase1-architecture",
+  "description": "Phase 1 Architecture. Wave 1: backend-arch + infra-arch (parallel). Wave 2: data-arch + agent-arch (need Wave 1 ADRs). Wave 3: security-arch + cloud-economics (need all ADRs + data model).",
+  "lead": { "kind": "subagent_type", "subagent_type": "atlas" },
+  "trivial_project_skip_members": ["data-arch", "agent-arch"],
+  "validation": {
+    "on_entry": { "check_required_dirs": [".sisyphus/knowledge/business-intent"], "skip_if_missing": true },
+    "on_exit": { "check_artifacts": [".sisyphus/knowledge/adrs/*.md"], "min_count": 6, "fail_missing": true }
+  },
+  "members": [
+    {
+      "kind": "category", "name": "backend-arch", "category": "quick",
+      "fallback_categories": ["writing"],
+      "always_load": [
+        "context-map", "adr-management", "dotnet-backend-patterns",
+        "typespec-api-design", "observability-monitoring",
+        "azure-well-architected-assessment"
+      ],
+      "conditional_load": [
+        { "if_adr_contains": ["cosmos", "service bus", "event"], "load": ["cosmos-db-nosql-patterns", "event-driven-messaging", "async-request-reply"] },
+        { "if_adr_contains": ["function", "serverless"], "load": ["azure-functions-patterns"] },
+        { "if_adr_contains": ["versioning", "api-version"], "load": ["api-versioning-governance"] },
+        { "if_adr_contains": ["rbac", "authorization"], "load": ["azure-role-selector"] },
+        { "if_adr_contains": ["aspire", "orchestrator"], "load": ["dotnet-aspire"] },
+        { "if_adr_contains": ["jwt", "oauth", "bearer"], "load": ["api-security-review"] },
+        { "if_adr_contains": ["postgres"], "load": ["postgresql-npgsql", "azure-postgresql"] }
+      ],
+      "load_instructions": [
+        ".github/instructions/global.instructions.md",
+        ".github/instructions/coding-standards/csharp/aspnetcore-api.instructions.md",
+        ".github/instructions/coding-standards/csharp/csharp.instructions.md",
+        ".github/instructions/self-explanatory-code-commenting.instructions.md"
+      ],
+      "trivial_project_skip": false,
+      "prompt": "You are a backend architect. Phase 1 (Wave 1). Read business-intent/ first.\n\nOUTPUTS:\n1. ADR: backend API style (REST, Problem Details, versioning)\n2. ADR: async/event strategy\n3. OpenAPI contract -> api-contracts/openapi.yaml\n4. Observability design -> observability/design.md\n5. Implementation plan for backend\n\nWrite ADRs to adrs/ADR-NNN-title.md. No code. Follow loaded instruction files."
+    },
+    {
+      "kind": "category", "name": "infra-arch", "category": "quick",
+      "fallback_categories": ["writing"],
+      "always_load": [
+        "context-map", "adr-management", "azure-container-apps",
+        "azd-deployment", "azure-well-architected-assessment",
+        "finops", "azure-deployment-preflight"
+      ],
+      "conditional_load": [
+        { "if_adr_contains": ["networking", "vnet", "private endpoint"], "load": ["private-networking", "azure-network-security-perimeter"] },
+        { "if_adr_contains": ["aks", "kubernetes"], "load": ["aks-cluster-architecture"] },
+        { "if_adr_contains": ["key vault", "secret"], "load": ["secret-management", "identity-managed-identity"] },
+        { "if_adr_contains": ["landing zone", "enterprise"], "load": ["azure-landing-zone"] },
+        { "if_adr_contains": ["dr", "disaster", "backup"], "load": ["dr-design"] },
+        { "if_adr_contains": ["rbac", "iam"], "load": ["azure-role-selector"] },
+        { "if_adr_contains": ["avm", "bicep module"], "load": ["bicep-avm-authoring", "azure-verified-modules"] },
+        { "if_adr_contains": ["terraform"], "load": ["terraform-patterns"] },
+        { "if_adr_contains": ["signing", "sbom", "supply chain"], "load": ["container-supply-chain"] },
+        { "if_adr_contains": ["acr", "container registry"], "load": ["acr-artifact-lifecycle"] }
+      ],
+      "load_instructions": [
+        ".github/instructions/global.instructions.md",
+        ".github/instructions/azure-iac.instructions.md",
+        ".github/instructions/coding-standards/bicep/bicep.instructions.md",
+        ".github/instructions/data-sovereignty.instructions.md"
+      ],
+      "trivial_project_skip": false,
+      "prompt": "You are an Azure infra architect. Phase 1 (Wave 1). Read business-intent/ and budget.md first.\n\nOUTPUTS:\n1. ADR: hosting platform with cost estimate\n2. ADR: secret management\n3. ADR: deployment toolchain\n4. ADR: DR strategy\n5. Cost estimate -> cost-estimates/architecture-azure.md\n\nWrite ADRs to adrs/. Follow loaded instruction files for Bicep and IaC standards."
+    },
+    {
+      "kind": "category", "name": "data-arch", "category": "quick",
+      "fallback_categories": ["writing"],
+      "always_load": ["context-map", "adr-management"],
+      "conditional_load": [
+        { "if_adr_contains": ["cosmos", "documentdb"], "load": ["cosmos-db-nosql-patterns", "cosmos-nosql-query-generation"] },
+        { "if_adr_contains": ["postgres", "postgresql"], "load": ["azure-postgresql", "postgresql-npgsql"] },
+        { "if_adr_contains": ["fabric", "analytics", "lakehouse"], "load": ["microsoft-fabric", "fabric-schema-lifecycle"] },
+        { "if_adr_contains": ["purview", "governance"], "load": ["microsoft-purview"] },
+        { "if_adr_contains": ["pii", "gdpr", "residency"], "load": ["data-transfer-compliance", "privacy-safe-data-deidentification"] },
+        { "if_adr_contains": ["sql"], "load": ["sql-query-generation"] }
+      ],
+      "load_instructions": [
+        ".github/instructions/global.instructions.md",
+        ".github/instructions/data-sovereignty.instructions.md"
+      ],
+      "trivial_project_skip": true,
+      "trivial_project_rationale": "No data layer for stateless API demo",
+      "prompt": "PREREQUISITE: 1+ ADR exists in adrs/. Otherwise write data-arch-waiting.md and STOP.\n\nYou are a data architect. Phase 1 (Wave 2).\n\nOUTPUTS:\n1. ADR: data platform decision\n2. ADR: data governance\n3. ADR: PII and compliance\n4. Data model -> data/data-model.md"
+    },
+    {
+      "kind": "category", "name": "agent-arch", "category": "quick",
+      "fallback_categories": ["writing"],
+      "always_load": ["context-map", "adr-management"],
+      "conditional_load": [
+        { "if_adr_contains": ["agent", "maf"], "load": ["microsoft-agent-framework", "composable-app-architecture"] },
+        { "if_adr_contains": ["mcp", "tool server"], "load": ["mcp-server-design"] },
+        { "if_adr_contains": ["hitl", "human-in-loop", "approval"], "load": ["hitl-design-patterns"] },
+        { "if_adr_contains": ["autonomous", "agent loop"], "load": ["autonomous-agent-loops"] },
+        { "if_adr_contains": ["latency", "performance"], "load": ["agent-performance-optimization"] },
+        { "if_adr_contains": ["evaluate", "test quality"], "load": ["agenteval"] },
+        { "if_adr_contains": ["governance", "policy"], "load": ["agent-governance-toolkit"] },
+        { "if_adr_contains": ["threat model"], "load": ["threat-modelling", "owasp-agentic"] },
+        { "if_adr_contains": ["skill", "composable", "api-as-skill"], "load": ["app-as-skill"] },
+        { "if_adr_contains": ["parallel"], "load": ["dispatching-parallel-agents"] },
+        { "if_adr_contains": ["rai", "responsible"], "load": ["responsible-ai-operating-model"] }
+      ],
+      "load_instructions": [
+        ".github/instructions/global.instructions.md",
+        ".github/instructions/agentic-security.instructions.md",
+        ".github/instructions/llm-structured-output.instructions.md"
+      ],
+      "trivial_project_skip": true,
+      "trivial_project_rationale": "No AI agents or MCP for stateless API demo",
+      "prompt": "PREREQUISITE: 2+ ADRs + data-model.md exist. Otherwise write agent-arch-waiting.md and STOP.\n\nYou are an AI agent architect. Phase 1 (Wave 2).\n\nOUTPUTS:\n1. ADR: app architecture pattern\n2. ADR: agent architecture\n3. ADR: HITL design\n4. Tool definition catalogue\n5. Agent threat model (ASI01-ASI10)\n\nFollow loaded agentic-security.instructions.md for all agent-specific decisions."
+    },
+    {
+      "kind": "category", "name": "security-arch", "category": "quick",
+      "fallback_categories": ["writing"],
+      "always_load": [
+        "context-map", "adr-management", "threat-modelling",
+        "api-security-review", "risk-register"
+      ],
+      "conditional_load": [
+        { "if_adr_contains": ["agent", "ai", "llm"], "load": ["owasp-agentic", "agent-governance-toolkit"] },
+        { "if_adr_contains": ["defender", "sentinel"], "load": ["microsoft-defender", "azure-sentinel"] },
+        { "if_adr_contains": ["purview", "compliance"], "load": ["microsoft-purview"] },
+        { "if_adr_contains": ["design review"], "load": ["secure-by-design"] },
+        { "if_adr_contains": ["compliance", "audit"], "load": ["ca-from-iac"] }
+      ],
+      "load_instructions": [
+        ".github/instructions/global.instructions.md",
+        ".github/instructions/agentic-security.instructions.md"
+      ],
+      "trivial_project_skip": false,
+      "prompt": "PREREQUISITE: 4+ ADRs in adrs/. Otherwise write security-arch-waiting.md and STOP.\n\nYou are a security architect. Phase 1 (Wave 3).\n\nOUTPUTS:\n1. Threat model (STRIDE) -> security/threat-model.md\n2. Security review (OWASP) -> security/security-review.md\n3. High/Critical risks -> risks/registry.md\n\nFollow loaded agentic-security.instructions.md for OWASP ASI controls."
+    },
+    {
+      "kind": "category", "name": "cloud-economics", "category": "quick",
+      "fallback_categories": ["writing"],
+      "always_load": [
+        "finops", "cost-optimization", "agent-economics",
+        "azure-well-architected-assessment", "azure-cost-calculator"
+      ],
+      "conditional_load": [
+        { "if_adr_contains": ["fabric"], "load": ["microsoft-fabric"] }
+      ],
+      "load_instructions": [
+        ".github/instructions/global.instructions.md"
+      ],
+      "trivial_project_skip": false,
+      "prompt": "PREREQUISITE: 5+ ADRs + data-model.md + threat-model.md exist. Otherwise write cloud-economics-waiting.md and STOP.\n\nYou are a FinOps architect. Phase 1 (Wave 3).\n\nOUTPUTS:\n1. Azure cost estimate -> cost-estimates/architecture-azure.md\n2. Agent economics -> agent-economics/phase1-report.md\n3. Budget compliance check"
+    }
+  ]
+}

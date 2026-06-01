@@ -1,0 +1,30 @@
+# Phase 0 → 1 Gate: Intake to Architecture
+# Voters focus on business case, budget, and risk readiness.
+# Proposal is the business case for the project or feature.
+arb:
+  proposal: "Phase 0 → 1 Gate: [Project name] intake"
+
+  required_voters:
+    - name: product-owner
+      role: "Product Owner"
+    - name: cloud-economics
+      role: "Cloud Economics"
+
+  optional_voters:
+    - name: security-lead
+      role: "Security Lead"
+    - name: delivery-lead
+      role: "Delivery Lead"
+
+  quorum:
+    min_required_voters: 2
+    min_total_votes: 2
+    approval_threshold: 0.67
+    count_abstain: false
+    allow_partial: false
+
+  deadlock:
+    escalate_to: "VP Engineering"
+    escalation_contact: "vpe@example.com"
+    escalation_days: 3
+    escalation_backup: "CTO"

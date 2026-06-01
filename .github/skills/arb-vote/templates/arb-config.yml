@@ -1,0 +1,61 @@
+arb:
+  # Short title or ADR ID for this proposal. Appears in all vote files and the outcome report.
+  proposal: "ADR-YYYY-NNN: Short title here"
+
+  # Required voters — all must vote for quorum to be met (unless quorum.allow_partial is true).
+  # 'name' becomes the vote filename (votes/<name>.md). Must be lowercase, no spaces.
+  required_voters:
+    - name: alice
+      role: "Principal Architect"
+      email: "alice@example.com"
+    - name: bob
+      role: "Security Lead"
+      email: "bob@example.com"
+
+  # Optional voters — advisory only. Their votes are recorded but do not affect required-voter quorum.
+  optional_voters:
+    - name: carol
+      role: "Domain Expert"
+      email: "carol@example.com"
+    - name: dave
+      role: "Cloud Economics"
+      email: "dave@example.com"
+    - name: eve
+      role: "Delivery Lead"
+      email: "eve@example.com"
+
+  # Conditional voters — add when the proposal scope requires them.
+  # Common conditional roles: AI Ethics / RAI (add when AI/agents in scope).
+  # See standards/voter-roles.md for details.
+
+  quorum:
+    # Minimum number of required voters who must cast a vote. Default: all required voters.
+    min_required_voters: 2
+
+    # Minimum total votes counted (approve + reject, plus abstain if count_abstain is true).
+    # Set to count all voters (required + optional) for a full board; lower for lightweight gates.
+    min_total_votes: 3
+
+    # Fraction of counted votes needed to approve or reject. Must be > 0.5.
+    # Common values: 0.51 (simple majority), 0.67 (two-thirds), 0.75 (three-quarters), 1.0 (unanimous)
+    approval_threshold: 0.67
+
+    # If true, abstain votes count in the denominator (counted_votes). Default: false.
+    count_abstain: false
+
+    # If true, allow outcome determination even if some required voters have not voted.
+    # Use only in time-constrained situations. Document the reason in arb-outcome.md.
+    allow_partial: false
+
+  deadlock:
+    # Role or name of the person who breaks deadlocks and resolves escalations.
+    escalate_to: "VP Engineering"
+
+    # Contact address for the escalation owner.
+    escalation_contact: "vpe@example.com"
+
+    # Working days before a non-response by required voters triggers timeout escalation.
+    escalation_days: 3
+
+    # Secondary escalation owner if the primary is unavailable.
+    escalation_backup: "CTO"

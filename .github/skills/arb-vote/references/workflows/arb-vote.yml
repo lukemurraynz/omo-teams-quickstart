@@ -1,0 +1,85 @@
+name: ARB Vote
+
+on:
+  push:
+    paths:
+      - ".arb/**"
+  workflow_dispatch:
+    inputs:
+      finalize:
+        description: "Run tally and write outcome (true) or check quorum only (false)"
+        required: false
+        default: "false"
+
+jobs:
+  quorum-check:
+    name: Check quorum status
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install PyYAML
+        run: pip install pyyaml
+
+      - name: Check quorum
+        id: quorum
+        run: |
+          python .github/skills/arb-vote/scripts/check_quorum.py .arb/config.yml
+          echo "quorum_exit=$?" >> "$GITHUB_OUTPUT"
+        continue-on-error: true
+
+      - name: Report quorum status
+        run: |
+          if [ "${{ steps.quorum.outputs.quorum_exit }}" = "0" ]; then
+            echo "✓ Quorum met — ready to tally."
+          else
+            echo "✗ Quorum not met — pending votes remain."
+          fi
+
+  tally:
+    name: Tally and write outcome
+    runs-on: ubuntu-latest
+    needs: quorum-check
+    if: github.event.inputs.finalize == 'true'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install PyYAML
+        run: pip install pyyaml
+
+      - name: Tally votes
+        id: tally
+        run: |
+          python .github/skills/arb-vote/scripts/tally_votes.py .arb/config.yml
+          echo "tally_exit=$?" >> "$GITHUB_OUTPUT"
+
+      - name: Commit outcome file
+        if: steps.tally.outcome == 'success' || steps.tally.outcome == 'failure'
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add .arb/arb-outcome.md
+          git diff --staged --quiet || git commit -m "arb: record vote outcome [skip ci]"
+          git push
+
+      - name: Set PR status
+        run: |
+          case "${{ steps.tally.outputs.tally_exit }}" in
+            0) echo "Outcome: APPROVED" ;;
+            1) echo "Outcome: REJECTED" ; exit 1 ;;
+            2) echo "Outcome: INSUFFICIENT QUORUM" ; exit 1 ;;
+            3) echo "Outcome: DEADLOCK — escalation required" ; exit 1 ;;
+            *) echo "Outcome: ERROR" ; exit 1 ;;
+          esac

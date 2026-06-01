@@ -1,0 +1,67 @@
+{
+  "name": "phase4-operational-readiness",
+  "description": "Phase 4 Operational Readiness. SLOs, runbooks, final cost review. Final gate before production.",
+  "lead": { "kind": "subagent_type", "subagent_type": "atlas" },
+  "trivial_project_skip_members": [],
+  "validation": {
+    "on_entry": { "check_required_dirs": [".sisyphus/evidence/phase3"], "skip_if_missing": true },
+    "on_exit": {
+      "check_artifacts": [
+        ".sisyphus/knowledge/reliability/slos.md",
+        ".sisyphus/knowledge/runbooks/deployment-runbook.md",
+        ".sisyphus/knowledge/runbooks/incident-response.md"
+      ],
+      "min_count": 3, "fail_missing": true
+    }
+  },
+  "members": [
+    {
+      "kind": "category", "name": "reliability", "category": "quick",
+      "fallback_categories": ["writing"],
+      "always_load": ["observability-monitoring"],
+      "conditional_load": [
+        { "if_adr_contains": ["sre", "agent"], "load": ["azure-sre-agent"] },
+        { "if_adr_contains": ["chaos"], "load": ["chaos-engineering"] },
+        { "if_adr_contains": ["performance", "resilience"], "load": ["azure-performance-resilience-validation"] },
+        { "if_adr_contains": ["safe deploy", "ring"], "load": ["azure-safe-deployment-practices"] },
+        { "if_adr_contains": ["sentinel"], "load": ["azure-sentinel"] },
+        { "if_adr_contains": ["dr", "disaster"], "load": ["dr-design"] },
+        { "if_adr_contains": ["azd", "deployment"], "load": ["azd-deployment", "managing-azure-dev-cli-lifecycle"] }
+      ],
+      "load_instructions": [
+        ".github/instructions/global.instructions.md"
+      ],
+      "trivial_project_skip": false,
+      "prompt": "Reliability engineer. Phase 4. SLOs -> reliability/slos.md. Dashboards, alerts, DR validation.\n\nEvidence to evidence/phase4/reliability/"
+    },
+    {
+      "kind": "category", "name": "runbooks", "category": "writing",
+      "fallback_categories": ["quick"],
+      "always_load": ["docs-style"],
+      "conditional_load": [
+        { "if_adr_contains": ["troubleshoot"], "load": ["azure-troubleshooting"] },
+        { "if_adr_contains": ["release", "changelog"], "load": ["release-notes"] },
+        { "if_adr_contains": ["adr", "decision record"], "load": ["adr-management", "decision-record"] },
+        { "if_adr_contains": ["post-mortem", "incident"], "load": ["post-mortem"] }
+      ],
+      "load_instructions": [
+        ".github/instructions/global.instructions.md",
+        ".github/instructions/writing-style.instructions.md",
+        ".github/instructions/coding-standards/markdown/markdown.instructions.md"
+      ],
+      "trivial_project_skip": false,
+      "prompt": "Technical writer. Phase 4.\n1. Deployment runbook -> runbooks/deployment-runbook.md\n2. Incident response -> runbooks/incident-response.md\n\nFollow loaded writing-style and markdown instruction files."
+    },
+    {
+      "kind": "category", "name": "cloud-economics", "category": "quick",
+      "fallback_categories": ["writing"],
+      "always_load": ["finops", "cost-optimization", "agent-economics", "azure-cost-calculator"],
+      "conditional_load": [],
+      "load_instructions": [
+        ".github/instructions/global.instructions.md"
+      ],
+      "trivial_project_skip": false,
+      "prompt": "FinOps specialist. Phase 4 final cost review.\n\n1. Variance report -> cost-estimates/final-azure-report.md\n2. Agent economics -> agent-economics/phase4-final.md\n\nUse azure-cost-calculator for accurate pricing."
+    }
+  ]
+}
