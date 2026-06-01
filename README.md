@@ -2,6 +2,8 @@
 
 A reference implementation of the Oh My OpenAgent (omo) Teams governance model — 5 AI-powered teams, 5 ARB gates, one deployed application. Built using the model it demonstrates.
 
+> [OMO Teams: Multi-agent project delivery with ARB gates](https://luke.geek.nz/misc/omo-teams-arb-gates/)
+
 ## The project
 
 LinkSnap is a URL shortener API on Azure Container Apps with Cosmos DB for NoSQL. It's deliberately simple so the methodology is the story.
